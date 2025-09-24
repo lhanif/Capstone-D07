@@ -1,9 +1,17 @@
 import React from "react";
 
-export const AuthCard = ({ children }: { children: React.ReactNode }) => {
+export const AuthCard = ({
+    children,
+    className,
+}: {
+    children: React.ReactNode;
+    className?: string;
+}) => {
     return (
-        <div className="w-full max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-12">
-            {children}
-        </div>
+    <div
+        className={`bg-white shadow-xl rounded-2xl p-12 ${className ?? ""}`}
+    >
+        {children}
+    </div>
     );
 };
