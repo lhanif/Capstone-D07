@@ -1,24 +1,12 @@
+// src/app/(auth)/register/page.tsx
 import { AuthCard } from "@/components/AuthCard";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import Image from "next/image";
 
 export default function RegisterPage() {
     return (
-        <div className="min-h-screen flex flex-col items-center bg-gray-50">
-            {/* Logo */}
-            <div className="w-full flex justify-start pl-6 mb-4">
-                <Image
-                    src="/capstone logo 2.png"
-                    alt="Flowra Logo"
-                    width={450}
-                    height={31}
-                    priority
-                    className="h-auto w-[280px] sm:w-[300px] md:w-[400px] lg:w-[450px]"
-                />
-            </div>
-            
-
+        // HANYA konten spesifik untuk halaman ini
+        <div className="flex flex-col items-center w-full">
             <h1 className="font-semibold text-2xl sm:text-3xl font-poppins text-black mb-4">Selamat Datang!</h1>
 
             <AuthCard className="w-full max-w-[700px]">
@@ -33,7 +21,6 @@ export default function RegisterPage() {
                         <Input label="Nomor Telepon" placeholder="Masukkan nomor telepon anda" />
                         <Input label="Konfirmasi Kata Sandi" type="password" placeholder="Masukkan kata sandi anda" />
                     </div>
-
                     <Button type="submit" className="px-12">Sign Up</Button>
                 </form>
 
