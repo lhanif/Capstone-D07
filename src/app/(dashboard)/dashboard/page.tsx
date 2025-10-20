@@ -5,6 +5,7 @@ import { Header } from "@/components/ui/Header";
 import { HistoryTable } from "@/components/HistoryTable";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import { FieldCard } from "@/components/FieldCard"; 
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -19,9 +20,9 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-full">
 
                     {/* (Kalender & Sensor) */}
-                    <div className="grid grid-rows-2 gap-6">
+                    <div className="grid grid-rows-2 gap-6 h-full">
                         {/* Kalender */}
-                        <div className="bg-white rounded-xl shadow-md p-4 flex justify-center items-center">
+                        <div className="bg-white rounded-xl shadow-md p-4 flex justify-center items-center h-full">
                             <Calendar
                                 onChange={setDate}
                                 value={date}
@@ -30,37 +31,37 @@ export default function DashboardPage() {
                         </div>
 
                         {/* Suhu & Kelembaban */}
-                        <div className="flex flex-col gap-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-white rounded-xl shadow-md p-6 text-center">
-                                    <p className="text-sm text-gray-500 mb-4">Suhu</p>
+                        <div className="flex flex-col gap-4 h-full">
+                            <div className="grid grid-cols-2 gap-4 h-full">
+                                <div className="bg-white rounded-xl shadow-md p-6 text-center h-full">
+                                    <p className="text-sm font-semibold text-gray-900 mb-4">Suhu</p>
                                     <div className="flex items-center justify-center gap-4">
                                         <span className="text-2xl">☀️</span>
                                         <p className="text-3xl font-bold text-gray-800">27°C</p>
                                     </div>
                                 </div>
-                                <div className="bg-white rounded-xl shadow-md p-6 text-center">
-                                    <p className="text-sm text-gray-500 mb-4">Kelembaban</p>
+                                <div className="bg-white rounded-xl shadow-md p-6 text-center h-full">
+                                    <p className="text-sm font-semibold text-gray-900 mb-4">Kelembaban</p>
                                     <p className="text-3xl font-bold text-gray-800">80%</p>
                                 </div>
                             </div>
 
                             {/* Cuaca Hari Ini & Besok */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-white rounded-xl shadow-md p-6 text-center">
-                                    <p className="text-sm text-gray-500 mb-4">Cuaca Hari Ini</p>
+                            <div className="grid grid-cols-2 gap-4 h-full">
+                                <div className="bg-white rounded-xl shadow-md p-6 text-center h-full">
+                                    <p className="text-sm font-semibold text-gray-900 mb-4">Cuaca Hari Ini</p>
                                     <div className="flex flex-col items-center">
                                         <span className="text-3xl">⛅</span>
-                                        <p className="font-semibold text-gray-800">Cerah Berawan</p>
-                                        <p className="text-xs text-gray-400 mt-4">7 Mei 2025</p>
+                                        <p className="font-semibold text-gray-600">Cerah Berawan</p>
+                                        <p className="text-xs text-gray-500 mt-4">7 Mei 2025</p>
                                     </div>
                                 </div>
-                                <div className="bg-white rounded-2xl shadow-md p-6 text-center">
-                                    <p className="text-sm text-gray-500 mb-4">Cuaca Besok</p>
+                                <div className="bg-white rounded-2xl shadow-md p-6 text-center h-full">
+                                    <p className="text-sm font-semibold text-gray-900 mb-4">Cuaca Besok</p>
                                     <div className="flex flex-col items-center">
                                         <span className="text-3xl">🌧️</span>
-                                        <p className="font-semibold text-gray-800">Hujan</p>
-                                        <p className="text-xs text-gray-400 mt-4">8 Mei 2025</p>
+                                        <p className="font-semibold text-gray-600">Hujan</p>
+                                        <p className="text-xs text-gray-500 mt-4">8 Mei 2025</p>
                                     </div>
                                 </div>
                             </div>
@@ -68,33 +69,35 @@ export default function DashboardPage() {
                     </div>
 
                     {/* Fields */}
-                    <div className="flex flex-col gap-4 text-black h-full">
-                        <div className="bg-white rounded-xl shadow-md p-6 flex-grow flex-col justify-center">
-                            <h2 className="font-semibold text-black mb-10">Field 1</h2>
-                            <p>Kelembaban Tanah: 70%</p>
-                            <p>Ketinggian Air: 50 cm</p>
-                        </div>
-                        <div className="bg-white rounded-xl shadow-md p-4 flex-grow flex-col justify-center">
-                            <h2 className="font-semibold text-black">Field 2</h2>
-                            <p>Kelembaban Tanah: 70%</p>
-                            <p>Ketinggian Air: 50 cm</p>
-                        </div>
-                        <div className="bg-white rounded-xl shadow-md p-4 flex-grow flex-col justify-center">
-                            <h2 className="font-semibold text-black">Field 3</h2>
-                            <p>Kelembaban Tanah: 70%</p>
-                            <p>Ketinggian Air: 50 cm</p>
-                        </div>
-                        <div className="bg-white rounded-xl shadow-md p-4 flex-grow flex-col justify-center">
-                            <h2 className="font-semibold text-black">Field 4</h2>
-                            <p>Kelembaban Tanah: 70%</p>
-                            <p>Ketinggian Air: 50 cm</p>
-                        </div>
+                    <div className="grid grid-rows-4 gap-4">
+                        <FieldCard 
+                            title="Field 1" 
+                            soilMoisture="70%" 
+                            waterLevel="50 cm"
+                            isActive={true} 
+                        />
+                        <FieldCard 
+                            title="Field 2" 
+                            soilMoisture="70%" 
+                            waterLevel="50 cm" 
+                        />
+                        <FieldCard 
+                            title="Field 3" 
+                            soilMoisture="70%" 
+                            waterLevel="50 cm"
+                            isActive={true} 
+                        />
+                        <FieldCard 
+                            title="Field 4" 
+                            soilMoisture="70%" 
+                            waterLevel="50 cm" 
+                        />
                     </div>
 
                     {/* History */}
                     <div className="grid grid-rows-2 gap-6">
                         <div className="bg-white rounded-2xl shadow-md p-4 flex flex-col">
-                            <h2 className="font-semibold mb-2 text-black">History</h2>
+                            <h2 className="text-lg font-semibold mb-2 text-black">History</h2>
                             <div className="flex-grow flex items-center justify-center text-gray-400">
                                 <p>Placeholder untuk Grafik</p>
                             </div>
