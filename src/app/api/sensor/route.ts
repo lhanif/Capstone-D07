@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     const parseSensorString = (str: string | undefined): (number | null)[] => {
       if (!str) return [null, null, null, null];
       // Pisahkan string berdasarkan semicolon (;), lalu konversi ke float
-      const parts = str.split(';');
+      const parts = str.split('-');
       return parts.map(p => {
         const num = parseFloat(p.trim());
         // Memastikan hanya angka valid yang dimasukkan, selain itu return null
