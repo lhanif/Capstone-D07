@@ -69,8 +69,18 @@ export async function POST(req: NextRequest) {
     ]);
 
     return NextResponse.json({ message: "Data saved successfully" }, { status: 201 });
-  } catch (err: any) {
+    
+  } catch (err: unknown) { // FIX: Mengganti 'any' dengan 'unknown'
+    let errorMessage = "An unknown error occurred.";
+    
+    // Logic untuk mendapatkan pesan error yang aman dari tipe 'unknown'
+    if (err instanceof Error) {
+        errorMessage = err.message;
+    } else if (typeof err === 'object' && err !== null && 'message' in err) {
+        errorMessage = (err as { message: string }).message; 
+    }
+
     console.error(err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
