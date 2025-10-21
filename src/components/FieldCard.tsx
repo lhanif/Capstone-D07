@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Switch } from "@/components/ui/Switch"; // Pastikan path import benar
+import { Switch } from "@/components/ui/switch"; // Pastikan path import benar
 
 interface FieldCardProps {
     title: string;

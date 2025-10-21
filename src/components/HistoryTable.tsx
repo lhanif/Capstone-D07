@@ -42,7 +42,7 @@ export const HistoryTable = () => {
 
     return (
     <div className="bg-white rounded-2xl shadow p-4 flex flex-col h-full">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">History</h2>
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">Watering History</h2>
         <div className="overflow-x-auto flex-grow">
         <table className="w-full text-sm text-center">
             <thead className="text-black">
