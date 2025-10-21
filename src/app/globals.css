@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Custom styling untuk react-calendar */
+.react-calendar-custom {
+  border: none !important; 
+  width: 100%;
+  font-family: inherit; 
+}
+
+/* Mengubah warna teks navigasi (bulan & tahun) */
+.react-calendar-custom .react-calendar__navigation__label__labelText {
+  color: #374151; 
+  font-weight: 600;
+}
+.react-calendar-custom .react-calendar__navigation button:hover,
+.react-calendar-custom .react-calendar__navigation button:focus {
+    background-color: #f3f4f6;
+}
+
+/* Mengubah warna teks nama hari (MON, TUE, dst.) */
+.react-calendar-custom .react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Mengubah warna teks tanggal */
+.react-calendar-custom .react-calendar__tile {
+  color: #1f2937; 
+}
+
+/* Mengubah style tanggal yang aktif (dipilih) */
+.react-calendar-custom .react-calendar__tile--active {
+  background-color: #3b82f6 !important; 
+  color: white !important;
+}
+.react-calendar-custom .react-calendar__tile--active:hover {
+    background-color: #2563eb !important;
+}
+
+/* Mengubah warna teks tanggal hari ini */
+.react-calendar-custom .react-calendar__tile--now {
+  background-color: #dbeafe;
+}
+.react-calendar-custom .react-calendar__tile--now:hover {
+    background-color: #bfdbfe;
+}
+
+/* Mengubah warna tanggal di luar bulan ini */
+.react-calendar-custom .react-calendar__month-view__days__day--neighboringMonth {
+  color: #d1d5db;
+}
+
+.react-calendar-custom .react-calendar__month-view__days__day:nth-child(7n+1) {
+  color: red !important;
+}
