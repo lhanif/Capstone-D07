@@ -11,6 +11,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper.css';
 import { CalendarDays } from "lucide-react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import HistoryChart from "@/components/HistoryChart";
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -83,7 +84,7 @@ export default function DashboardPage() {
                             <div className="bg-white rounded-2xl shadow-md p-4 flex flex-col">
                                 <h2 className="font-semibold mb-2 text-black">History</h2>
                                 <div className="flex-grow flex items-center justify-center text-gray-400">
-                                    <p>Placeholder untuk Grafik</p>
+                                    <HistoryChart />
                                 </div>
                             </div>
                             <HistoryTable />
@@ -145,7 +146,7 @@ export default function DashboardPage() {
                                     <div className="bg-white rounded-2xl shadow-md p-4 h-96 flex flex-col">
                                         <h2 className="font-semibold mb-2 text-black">History</h2>
                                         <div className="flex-grow flex items-center justify-center text-gray-400">
-                                            <p>Placeholder untuk Grafik</p>
+                                            <HistoryChart />
                                         </div>
                                     </div>
                                 </SwiperSlide>
