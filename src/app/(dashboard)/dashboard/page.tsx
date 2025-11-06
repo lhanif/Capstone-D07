@@ -22,7 +22,7 @@ interface StatusData {
     servo_2_open: boolean;
     servo_3_open: boolean;
     servo_4_open: boolean;
-    [key: string]: any; 
+    [key: string]: unknown; 
 }
 
 const DEFAULT_STATUS: StatusData = {
@@ -68,14 +68,26 @@ useEffect(() => {
                     throw new Error("Format data yang dikembalikan tidak valid.");
                 }
 
-            } catch (error: any) {
-                console.error("Fetch Status Error:", error);
-                // Beri notifikasi kepada pengguna jika gagal mengambil data
-                toast.error(`Error memuat data: ${error.message}`);
-                
-                // Jika gagal, pastikan kita tetap menggunakan DEFAULT_STATUS
-                setDeviceStatus(DEFAULT_STATUS);
-            } finally {
+            } catch (error: unknown) { // Ganti 'any' dengan 'unknown'
+    console.error("Fetch Status Error:", error);
+    
+    let errorMessage = "Kesalahan tidak diketahui.";
+
+    // Lakukan pemeriksaan tipe (Type Guard)
+    if (error instanceof Error) {
+        // Jika error adalah instance dari class Error (memiliki properti .message)
+        errorMessage = error.message;
+    } else if (typeof error === 'string') {
+        // Jika error adalah string
+        errorMessage = error;
+    } 
+
+    // Beri notifikasi kepada pengguna
+    toast.error(`Error memuat data: ${errorMessage}`);
+    
+    // Jika gagal, pastikan kita tetap menggunakan DEFAULT_STATUS
+    setDeviceStatus(DEFAULT_STATUS);
+} finally {
                 setIsLoading(false); // Akhiri loading, terlepas dari sukses atau gagal
             }
         };

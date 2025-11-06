@@ -14,7 +14,7 @@ interface StatusData {
     servo_2_open: boolean;
     servo_3_open: boolean;
     servo_4_open: boolean;
-    [key: string]: any; // Untuk mengakomodasi field lain (misalnya idx, last_updated)
+    [key: string]: unknown; // Untuk mengakomodasi field lain (misalnya idx, last_updated)
 }
 
 interface FieldCardProps {
@@ -88,11 +88,19 @@ export const FieldCard = ({
 
             toast.success(`${title} ${newCheckedState ? "Diaktifkan (ON)" : "Dinonaktifkan (OFF)"}`);
             
-        } catch (error: any) {
-            console.error("Update Error:", error);
-            setIsOn(previousState); // Kembalikan switch ke state semula (roll back)
-            toast.error(`Gagal: ${error.message || "Kesalahan jaringan."}`);
-        } finally {
+        } catch (error: unknown) {
+    console.error("Update Error:", error);
+    setIsOn(previousState); // Kembalikan switch ke state semula (roll back)
+
+    // Perlu ada pemeriksaan tipe (type check) sebelum mengakses properti 'message'
+    if (error instanceof Error) {
+        toast.error(`Gagal: ${error.message}`);
+    } else if (typeof error === 'string') {
+        toast.error(`Gagal: ${error}`);
+    } else {
+        toast.error("Gagal: Kesalahan tidak diketahui.");
+    }
+} finally {
             setIsLoading(false);
         }
     };
