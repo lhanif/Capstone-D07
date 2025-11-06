@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Header } from "@/components/ui/Header";
 import { FieldCard } from "@/components/FieldCard";
 import Calendar from "react-calendar";
@@ -10,15 +10,89 @@ import 'swiper/swiper.css';
 import { CalendarDays } from "lucide-react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import HistoryChart from "@/components/HistoryChart";
+import toast from "react-hot-toast";
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
+
+interface StatusData {
+    device_id: string;
+    is_rain: boolean;
+    servo_1_open: boolean;
+    servo_2_open: boolean;
+    servo_3_open: boolean;
+    servo_4_open: boolean;
+    [key: string]: any; 
+}
+
+const DEFAULT_STATUS: StatusData = {
+    device_id: "STM_004", 
+    
+    is_rain: false,
+    servo_1_open: false,
+    servo_2_open: false,
+    servo_3_open: false,
+    servo_4_open: false,
+    
+
+}
 
 export default function DashboardPage() {
     const [date, setDate] = useState<Value>(new Date());
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
     const isDesktop = useMediaQuery("(min-width: 1024px)"); 
+    const [deviceStatus, setDeviceStatus] = useState<StatusData>(DEFAULT_STATUS);
+    const [isLoading, setIsLoading] = useState(true);
 
+    // --- FUNGSI FETCH AWAL (Menggunakan API GET) ---
+useEffect(() => {
+        const fetchDeviceStatus = async () => {
+            setIsLoading(true); // Mulai loading
+            
+            try {
+                // PANGGIL API GET yang sesungguhnya
+                const response = await fetch(`/api/servo/read?deviceId=STM_004`); 
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || "Gagal memuat status awal perangkat.");
+                }
+                
+                // Ambil data JSON
+                const data = await response.json();
+                
+                // Pastikan data status yang dikembalikan ada
+                if (data && data.current_status) {
+                    setDeviceStatus(data.current_status); // Set status dengan data dari Supabase
+                } else {
+                    throw new Error("Format data yang dikembalikan tidak valid.");
+                }
+
+            } catch (error: any) {
+                console.error("Fetch Status Error:", error);
+                // Beri notifikasi kepada pengguna jika gagal mengambil data
+                toast.error(`Error memuat data: ${error.message}`);
+                
+                // Jika gagal, pastikan kita tetap menggunakan DEFAULT_STATUS
+                setDeviceStatus(DEFAULT_STATUS);
+            } finally {
+                setIsLoading(false); // Akhiri loading, terlepas dari sukses atau gagal
+            }
+        };
+
+        fetchDeviceStatus();
+    }, []);
+
+    // --- FUNGSI UPDATE STATUS (Dilewatkan ke FieldCard) ---
+    const handleStatusUpdate = (updatedData: StatusData) => {
+        // Fungsi ini dipanggil FieldCard setelah sukses POST
+        setDeviceStatus(updatedData); // Sinkronkan state data utama
+    };
+
+
+    if (isLoading) {
+        return <p className="p-4 text-center">Memuat data...</p>;
+    }
         return (
         <div className="p-4 w-full flex flex-col gap-4">
             <Header />
@@ -75,13 +149,53 @@ export default function DashboardPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {/* Kolom Fields Kiri */}
                                 <div className="flex flex-col gap-4">
-                                    <FieldCard title="Field 1" soilMoisture="70%" waterLevel="50 cm" isActive={true} />
-                                    <FieldCard title="Field 2" soilMoisture="70%" waterLevel="50 cm" />
-                                </div>
-                                {/* Kolom Fields Kanan */}
-                                <div className="flex flex-col gap-4">
-                                    <FieldCard title="Field 3" soilMoisture="70%" waterLevel="50 cm" isActive={true} />
-                                    <FieldCard title="Field 4" soilMoisture="70%" waterLevel="50 cm" />
+{/* Field 1 (Servo 1) */}
+                    <FieldCard 
+                        title="Field 1" 
+                        soilMoisture="70%" 
+                        waterLevel="50 cm" 
+                        isActive={deviceStatus.servo_1_open} 
+                        deviceId="STM_004" 
+                        servoKey="servo_1_open" 
+                        currentStatus={deviceStatus} 
+                        onUpdateSuccess={handleStatusUpdate}
+                    />
+                    {/* Field 2 (Servo 2) */}
+                    <FieldCard 
+                        title="Field 2" 
+                        soilMoisture="70%" 
+                        waterLevel="50 cm" 
+                        isActive={deviceStatus.servo_2_open} 
+                        deviceId="STM_004" 
+                        servoKey="servo_2_open" 
+                        currentStatus={deviceStatus} 
+                        onUpdateSuccess={handleStatusUpdate}
+                    />
+                </div>
+                
+                <div className="flex flex-col gap-4">
+                    {/* Field 3 (Servo 3) */}
+                    <FieldCard 
+                        title="Field 3" 
+                        soilMoisture="70%" 
+                        waterLevel="50 cm" 
+                        isActive={deviceStatus.servo_3_open} 
+                        deviceId="STM_004" 
+                        servoKey="servo_3_open" 
+                        currentStatus={deviceStatus} 
+                        onUpdateSuccess={handleStatusUpdate}
+                    />
+                    {/* Field 4 (Servo 4) */}
+                    <FieldCard 
+                        title="Field 4" 
+                        soilMoisture="70%" 
+                        waterLevel="50 cm" 
+                        isActive={deviceStatus.servo_4_open} 
+                        deviceId="STM_004" 
+                        servoKey="servo_4_open" 
+                        currentStatus={deviceStatus} 
+                        onUpdateSuccess={handleStatusUpdate}
+                    />
                                 </div>
                             </div>
                             
@@ -135,12 +249,53 @@ export default function DashboardPage() {
                         {/* Fields */}
                         <div className="grid grid-rows-2 gap-6">
                             <div className="flex flex-col gap-4">
-                                <FieldCard title="Field 1" soilMoisture="70%" waterLevel="50 cm" isActive={true} />
-                                <FieldCard title="Field 2" soilMoisture="70%" waterLevel="50 cm" />
-                            </div>
-                            <div className="flex flex-col gap-4">
-                                <FieldCard title="Field 3" soilMoisture="70%" waterLevel="50 cm" isActive={true} />
-                                <FieldCard title="Field 4" soilMoisture="70%" waterLevel="50 cm" />
+{/* Field 1 (Servo 1) */}
+                    <FieldCard 
+                        title="Field 1" 
+                        soilMoisture="70%" 
+                        waterLevel="50 cm" 
+                        isActive={deviceStatus.servo_1_open} 
+                        deviceId="STM_004" 
+                        servoKey="servo_1_open" 
+                        currentStatus={deviceStatus} 
+                        onUpdateSuccess={handleStatusUpdate}
+                    />
+                    {/* Field 2 (Servo 2) */}
+                    <FieldCard 
+                        title="Field 2" 
+                        soilMoisture="70%" 
+                        waterLevel="50 cm" 
+                        isActive={deviceStatus.servo_2_open} 
+                        deviceId="STM_004" 
+                        servoKey="servo_2_open" 
+                        currentStatus={deviceStatus} 
+                        onUpdateSuccess={handleStatusUpdate}
+                    />
+                </div>
+                
+                <div className="flex flex-col gap-4">
+                    {/* Field 3 (Servo 3) */}
+                    <FieldCard 
+                        title="Field 3" 
+                        soilMoisture="70%" 
+                        waterLevel="50 cm" 
+                        isActive={deviceStatus.servo_3_open} 
+                        deviceId="STM_004" 
+                        servoKey="servo_3_open" 
+                        currentStatus={deviceStatus} 
+                        onUpdateSuccess={handleStatusUpdate}
+                    />
+                    {/* Field 4 (Servo 4) */}
+                    <FieldCard 
+                        title="Field 4" 
+                        soilMoisture="70%" 
+                        waterLevel="50 cm" 
+                        isActive={deviceStatus.servo_4_open} 
+                        deviceId="STM_004" 
+                        servoKey="servo_4_open" 
+                        currentStatus={deviceStatus} 
+                        onUpdateSuccess={handleStatusUpdate}
+                    />
                             </div>
                         </div>
 
