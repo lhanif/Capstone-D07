@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Switch } from "@/components/ui/Switch"; 
+import { Switch } from "@/components/ui/switch"; 
 import { toast } from 'react-hot-toast'; // Pastikan Anda menginstal dan mengimpor react-hot-toast
 
 // Definisikan tipe data untuk Payload dan Props
