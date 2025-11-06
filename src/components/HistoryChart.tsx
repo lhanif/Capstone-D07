@@ -43,19 +43,38 @@ export default function HistoryChart() {
   const [selectedType, setSelectedType] = useState<"ultrasonic" | "soil" | "environment">("ultrasonic");
 
   useEffect(() => {
+    let isMounted = true;
     const fetchData = async () => {
       try {
         const res = await fetch("/api/sensor/data", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
+          cache: "no-store",
         });
-        const json = await res.json();
 
-        if (json.success) {
-          setSensorData(json.data as SensorData[]);
+        if (!res.ok) {
+          console.error("HTTP error:", res.status, res.statusText);
+          return;
+        }
+
+        const json = await res.json().catch(() => null);
+
+        if (!json) {
+          console.error("Response kosong / tidak valid");
+          return;
+        }
+
+        const data = Array.isArray(json)
+          ? json
+          : Array.isArray(json.data)
+          ? json.data
+          : [];
+
+        if (isMounted && data.length > 0) {
+          setSensorData(data as SensorData[]);
         } else {
-          console.error("Gagal mengambil data sensor:", json.error);
+          console.warn("Tidak ada data sensor yang ditemukan.");
         }
       } catch (error) {
         console.error("Fetch error:", error);
@@ -63,6 +82,13 @@ export default function HistoryChart() {
     };
 
     fetchData();
+
+    const interval = setInterval(fetchData, 10000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   if (sensorData.length === 0)
@@ -88,7 +114,7 @@ export default function HistoryChart() {
     data: [...sensorData].reverse().map((item) => parseFloat(item[dataKey])),
     borderColor: color,
     backgroundColor: color + "33",
-    tension: 0.3,
+    tension: 0.4,
   });
 
   // Dataset untuk setiap tipe sensor
@@ -121,6 +147,11 @@ export default function HistoryChart() {
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
+    animation: {
+      duration: 800,
+      easing: "easeInOutCubic" as const,
+    },
     plugins: {
       legend: {
         position: "top" as const,
@@ -135,46 +166,66 @@ export default function HistoryChart() {
             : "Temperature & Humidity History",
       },
     },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: { 
+          color: "#4b5563",
+          stepSize: 100
+        },
+      },
+      x: {
+        ticks: { color: "#4b5563" },
+      },
+    },
   };
 
   return (
-    <div className="p-6 bg-white shadow-lg rounded-2xl">
+    <div className="p-5 transition-all duration-300 w-full h-full flex flex-col">
+      <div className="flex justify-between items-center mb-1">
+        <h2 className="text-xl font-semibold text-gray-800">
+          History
+        </h2>
 
-      {/* Tombol pilihan tipe data */}
-      <div className="flex justify-center gap-3 mb-6">
-        <button
-          onClick={() => setSelectedType("ultrasonic")}
-          className={`text-sm px-2 py-1 rounded-lg ${
-            selectedType === "ultrasonic"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700"
-          }`}
-        >
-          Ultrasonic
-        </button>
-        <button
-          onClick={() => setSelectedType("soil")}
-          className={`text sm px-2 py-1 rounded-lg ${
-            selectedType === "soil"
-              ? "bg-green-600 text-white"
-              : "bg-gray-200 text-gray-900"
-          }`}
-        >
-          Soil Moisture
-        </button>
-        <button
-          onClick={() => setSelectedType("environment")}
-          className={`text-sm px-2 py-1 rounded-lg ${
-            selectedType === "environment"
-              ? "bg-orange-600 text-white"
-              : "bg-gray-200 text-gray-900"
-          }`}
-        >
-          Temp & Humidity
-        </button>
+        {/* Tombol pilihan tipe data */}
+        <div className="flex justify-center gap-3">
+          <button
+            onClick={() => setSelectedType("ultrasonic")}
+            className={`text-sm px-2 py-0.5 rounded-md transition-all ${
+              selectedType === "ultrasonic"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            Ultrasonic
+          </button>
+          <button
+            onClick={() => setSelectedType("soil")}
+            className={`text-sm px-2 py-0.5 rounded-md ${
+              selectedType === "soil"
+                ? "bg-green-600 text-white"
+                : "bg-gray-200 text-gray-900 hover:bg-gray-300"
+            }`}
+          >
+            Soil Moisture
+          </button>
+          <button
+            onClick={() => setSelectedType("environment")}
+            className={`text-sm px-2 py-0.5 rounded-md ${
+              selectedType === "environment"
+                ? "bg-orange-600 text-white"
+                : "bg-gray-200 text-gray-900"
+            }`}
+          >
+            Temp & Humidity
+          </button>
+        </div>
+      </div>  
+
+      {/* 1. Tambahkan pembungkus ini */}
+      <div className="flex-grow relative h-64 md:h-auto">
+        <Line data={chartData} options={chartOptions} />
       </div>
-
-      <Line data={chartData} options={chartOptions} />
     </div>
   );
 }

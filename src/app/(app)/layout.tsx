@@ -1,15 +1,13 @@
-// src/app/(app)/layout.tsx
 import { Footer } from "@/components/ui/Footer";
 import Image from "next/image";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-    // Layout ini untuk halaman seperti Profil, dll.
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
             {/* Header dengan Logo */}
             <header className="w-full flex justify-start items-center pl-4 mb-6">
                 <Image
-                    src="/capstone logo 2.png" // Pastikan path logo benar
+                    src="/capstone logo 2.png" 
                     alt="Flowra Logo"
                     width={450}
                     height={31}

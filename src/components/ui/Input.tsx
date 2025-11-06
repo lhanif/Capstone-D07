@@ -22,14 +22,13 @@ export const Input: React.FC<InputProps> = ({ label, type, ...props }) => {
             <div className="relative">
                 <input
                     {...props}
-                    // 4. Ubah tipe input secara dinamis
                     type={isPasswordField ? (isPasswordVisible ? 'text' : 'password') : type}
                     className="w-full rounded-xl border border-gray-300 px-3 py-2 text-black placeholder-[#7A7A7A] focus:outline-none focus:ring-2 focus:ring-primary-2"
                 />
-                {/* 5. Tampilkan tombol dengan ikon mata HANYA jika tipe inputnya password */}
+
                 {isPasswordField && (
                     <button
-                        type="button" // Penting agar tidak men-submit form
+                        type="button"
                         onClick={togglePasswordVisibility}
                         className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
                     >

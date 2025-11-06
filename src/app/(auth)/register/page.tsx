@@ -1,7 +1,5 @@
-// src/app/(auth)/register/page.tsx
 "use client";
 import { useState } from "react";
-
 import { AuthCard } from "@/components/AuthCard";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -37,7 +35,6 @@ export default function RegisterPage() {
   };
 
   return (
-    // HANYA konten spesifik untuk halaman ini
     <div className="flex flex-col items-center w-full">
       <h1 className="font-semibold text-2xl sm:text-3xl font-poppins text-black mb-4">
         Selamat Datang!

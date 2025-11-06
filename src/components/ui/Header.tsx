@@ -5,11 +5,6 @@ import Link from "next/link";
 import { UserCircle } from "lucide-react";
 import Cookies from "js-cookie";
 
-// Interface ProfileData dihapus karena tidak digunakan
-// interface ProfileData {
-//   active_device_id: string;
-// }
-
 export const Header = () => {
   const [deviceId, setDeviceId] = useState<string>("");
 
