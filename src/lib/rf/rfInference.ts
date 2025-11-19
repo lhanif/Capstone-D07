@@ -21,7 +21,7 @@ interface TreeNode {
 /**
  * Interface untuk seluruh struktur model Random Forest yang dimuat dari JSON.
  */
-interface RFModelStructure {
+export interface RFModelStructure {
     model_type: string;
     n_estimators: number;
     classes: string[];

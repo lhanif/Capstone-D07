@@ -146,7 +146,6 @@ export default function DashboardPage() {
     };
   }, [deviceId]);
 
-  // --- LOGIKA BARU UNTUK PREDIKSI CUACA ---
   useEffect(() => {
     if (latestData && latestData.temperature !== undefined && latestData.humidity !== undefined) {
       const runPredictionAndUpdateStatus = async () => {
@@ -183,13 +182,10 @@ export default function DashboardPage() {
       runPredictionAndUpdateStatus();
     }
   }, [latestData]); 
-  // --- AKHIR LOGIKA PREDIKSI CUACA ---
-
 
   if (isLoading) return <p>Loading...</p>;
   if (!latestData) return <p>No data available</p>;
 
-  // --- Logika Tampilan Cuaca yang Dimodifikasi ---
   const isRaining = deviceStatus.is_rain;
   const weatherEmoji = isRaining ? "🌧️" : "☀️";
   const weatherText = isRaining ? "Hujan" : "Tidak Hujan";
@@ -216,7 +212,6 @@ export default function DashboardPage() {
                       Suhu
                     </p>
                     <div className="flex items-center justify-center gap-4">
-                      {/* <span className="text-2xl">☀️</span> */}
                       <p className="text-3xl font-bold text-gray-800">{latestData.temperature}°C</p>
                     </div>
                   </div>
@@ -229,7 +224,6 @@ export default function DashboardPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   {" "}
-                  {/* --- BLOK PREDIKSI CUACA (DESKTOP) --- */}
                   <div className="bg-white rounded-xl shadow-md p-6 text-center col-span-2">
                     <p className="text-sm font-semibold text-gray-900 mb-4">
                       Prediksi Cuaca
@@ -242,7 +236,6 @@ export default function DashboardPage() {
                       <p className="text-xs text-gray-500 mt-4">{new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</p>
                     </div>
                   </div>
-                  {/* --- BLOK CUACA BESOK DIHILANGKAN --- */}
                 </div>
               </div>
             </div>
@@ -304,8 +297,9 @@ export default function DashboardPage() {
         ) : (
           <div className="grid grid-cols-1 gap-6">
             <div className="grid grid-cols-2 gap-6">
-              {/* --- BLOK PREDIKSI CUACA (MOBILE) --- */}
-              <div className="bg-white rounded-2xl shadow p-4 text-center">
+              {/* --- BLOK PREDIKSI CUACA (MOBILE - DILEBARKAN) --- */}
+              {/* Menggunakan col-span-2 agar mengambil seluruh lebar baris ini */}
+              <div className="bg-white rounded-2xl shadow p-4 text-center col-span-2"> 
                 <p className="text-sm text-gray-500 mb-1">Prediksi Cuaca</p>
                 <div className="flex flex-col items-center">
                   <span className="text-3xl">{weatherEmoji}</span>
@@ -313,31 +307,12 @@ export default function DashboardPage() {
                   <p className="text-xs text-gray-400 mt-2">{new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</p>
                 </div>
               </div>
-              
-              {/* --- BLOK CUACA BESOK DIHILANGKAN, DIGANTI DENGAN KALENDER --- */}
-              <div className="bg-white rounded-2xl shadow p-4 text-center flex flex-col">
-                <p className="text-sm text-gray-500 mb-1">Kalender</p>
-                <div className="flex flex-col items-center flex-grow justify-center">
-                  <span className="text-3xl">🗓️</span>
-                  <p className="font-semibold text-gray-800">Lihat Data Historis</p>
-                  <p className="text-xs text-gray-400 mt-2">{new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</p>
-                </div>
-                <button
-                  onClick={() => setIsCalendarOpen(true)}
-                  className="self-end mt-auto -mb-2 -mr-2 text-blue-500 hover:text-blue-700"
-                >
-                  <CalendarDays size={24} />
-                </button>
-              </div>
-              {/* ---------------------------------------------------- */}
-
             </div>
 
             <div className="grid grid-cols-2 gap-6">
               <div className="bg-white rounded-2xl shadow p-4 text-center">
                 <p className="text-sm text-gray-500 mb-1">Suhu</p>
                 <div className="flex items-center justify-center gap-2">
-                  {/* <span className="text-3xl">☀️</span> */}
                   <p className="text-3xl font-bold text-gray-800">{latestData.temperature}°C</p>
                 </div>
               </div>
@@ -406,14 +381,24 @@ export default function DashboardPage() {
         )}
       </div>
 
+      {/* --- FLOATING CALENDAR BUTTON (Hanya Muncul di Mobile) --- */}
       {!isDesktop && (
-        <CalendarModal
-          isOpen={isCalendarOpen}
-          onClose={() => setIsCalendarOpen(false)}
-          date={date}
-          setDate={setDate}
-        />
+        <>
+          <button
+            onClick={() => setIsCalendarOpen(true)}
+            className="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 z-50"
+          >
+            <CalendarDays size={24} />
+          </button>
+          <CalendarModal
+            isOpen={isCalendarOpen}
+            onClose={() => setIsCalendarOpen(false)}
+            date={date}
+            setDate={setDate}
+          />
+        </>
       )}
+      {/* --- AKHIR FLOATING CALENDAR BUTTON --- */}
     </div>
   );
 }

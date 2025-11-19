@@ -38,9 +38,13 @@ interface Dataset {
   tension: number;
 }
 
+// Definisikan tipe untuk memudahkan penggunaan
+type ChartType = "ultrasonic" | "soil" | "environment";
+
 export default function HistoryChart() {
   const [sensorData, setSensorData] = useState<SensorData[]>([]);
-  const [selectedType, setSelectedType] = useState<"ultrasonic" | "soil" | "environment">("ultrasonic");
+  // Menggunakan tipe yang sudah didefinisikan
+  const [selectedType, setSelectedType] = useState<ChartType>("ultrasonic"); 
 
   useEffect(() => {
     let isMounted = true;
@@ -118,10 +122,7 @@ export default function HistoryChart() {
   });
 
   // Dataset untuk setiap tipe sensor
-  const datasetsMap: Record<
-    "ultrasonic" | "soil" | "environment",
-    Dataset[]
-  > = {
+  const datasetsMap: Record<ChartType, Dataset[]> = {
     ultrasonic: [
       makeDataset("Ultrasonic 1", "ultrasonic_1", "#ef4444"),
       makeDataset("Ultrasonic 2", "ultrasonic_2", "#f59e0b"),
@@ -180,6 +181,11 @@ export default function HistoryChart() {
     },
   };
 
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    // Memastikan nilai yang dipilih adalah salah satu dari ChartType yang valid
+    setSelectedType(e.target.value as ChartType);
+  };
+
   return (
     <div className="p-5 transition-all duration-300 w-full h-full flex flex-col">
       <div className="flex justify-between items-center mb-1">
@@ -187,42 +193,19 @@ export default function HistoryChart() {
           History
         </h2>
 
-        {/* Tombol pilihan tipe data */}
-        <div className="flex justify-center gap-3">
-          <button
-            onClick={() => setSelectedType("ultrasonic")}
-            className={`text-sm px-2 py-0.5 rounded-md transition-all ${
-              selectedType === "ultrasonic"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            Ultrasonic
-          </button>
-          <button
-            onClick={() => setSelectedType("soil")}
-            className={`text-sm px-2 py-0.5 rounded-md ${
-              selectedType === "soil"
-                ? "bg-green-600 text-white"
-                : "bg-gray-200 text-gray-900 hover:bg-gray-300"
-            }`}
-          >
-            Soil Moisture
-          </button>
-          <button
-            onClick={() => setSelectedType("environment")}
-            className={`text-sm px-2 py-0.5 rounded-md ${
-              selectedType === "environment"
-                ? "bg-orange-600 text-white"
-                : "bg-gray-200 text-gray-900"
-            }`}
-          >
-            Temp & Humidity
-          </button>
-        </div>
-      </div>  
+        {/* --- DROPDOWN SEBAGAI PENGGANTI TOMBOL HORIZONTAL --- */}
+        <select
+          value={selectedType}
+          onChange={handleSelectChange}
+          className="text-sm px-2 py-0.5 rounded-md border border-gray-300 bg-white text-gray-700 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="ultrasonic">Ultrasonic</option>
+          <option value="soil">Soil Moisture</option>
+          <option value="environment">Temp & Humidity</option>
+        </select>
+        {/* --- AKHIR DROPDOWN --- */}
+      </div> 	
 
-      {/* 1. Tambahkan pembungkus ini */}
       <div className="flex-grow relative h-64 md:h-auto">
         <Line data={chartData} options={chartOptions} />
       </div>
