@@ -125,7 +125,7 @@ export default function DashboardPage() {
     fetchLatest();
 
     const channel: RealtimeChannel = supabase
-      .channel("realtime_sensor")   
+      .channel("realtime_sensor")
       .on(
         "postgres_changes",
         {
@@ -146,8 +146,53 @@ export default function DashboardPage() {
     };
   }, [deviceId]);
 
+  // --- LOGIKA BARU UNTUK PREDIKSI CUACA ---
+  useEffect(() => {
+    if (latestData && latestData.temperature !== undefined && latestData.humidity !== undefined) {
+      const runPredictionAndUpdateStatus = async () => {
+        
+        const predictionInput = {
+          temperature: latestData.temperature,
+          humidity: latestData.humidity,
+        };
+
+        try {
+          const response = await fetch('/api/predict', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(predictionInput),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Gagal memperbarui status hujan dari model.");
+          }
+
+          const data = await response.json();
+
+          if (data && data.current_status) {
+            setDeviceStatus(data.current_status); 
+          }
+
+        } catch (error) {
+          console.error("Error Prediksi Model:", error);
+          toast.error("Gagal mendapatkan status hujan: Cek koneksi API.");
+        }
+      };
+
+      runPredictionAndUpdateStatus();
+    }
+  }, [latestData]); 
+  // --- AKHIR LOGIKA PREDIKSI CUACA ---
+
+
   if (isLoading) return <p>Loading...</p>;
   if (!latestData) return <p>No data available</p>;
+
+  // --- Logika Tampilan Cuaca yang Dimodifikasi ---
+  const isRaining = deviceStatus.is_rain;
+  const weatherEmoji = isRaining ? "🌧️" : "☀️";
+  const weatherText = isRaining ? "Hujan" : "Tidak Hujan";
 
   return (
     <div className="p-4 w-full flex flex-col gap-4">
@@ -184,28 +229,20 @@ export default function DashboardPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   {" "}
-                  <div className="bg-white rounded-xl shadow-md p-6 text-center">
+                  {/* --- BLOK PREDIKSI CUACA (DESKTOP) --- */}
+                  <div className="bg-white rounded-xl shadow-md p-6 text-center col-span-2">
                     <p className="text-sm font-semibold text-gray-900 mb-4">
-                      Cuaca Hari Ini
+                      Prediksi Cuaca
                     </p>
                     <div className="flex flex-col items-center">
-                      <span className="text-3xl">🌧️</span>
+                      <span className="text-3xl">{weatherEmoji}</span>
                       <p className="font-semibold text-gray-600">
-                        {deviceStatus.is_rain ? "Berpotensi Hujan" : "Hujan"}
+                        {weatherText}
                       </p>
-                      <p className="text-xs text-gray-500 mt-4">16 November 2025</p>
+                      <p className="text-xs text-gray-500 mt-4">{new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</p>
                     </div>
                   </div>
-                  <div className="bg-white rounded-2xl shadow-md p-6 text-center">
-                    <p className="text-sm font-semibold text-gray-900 mb-4">
-                      Cuaca Besok
-                    </p>
-                    <div className="flex flex-col items-center">
-                      <span className="text-3xl">🌧️</span>
-                      <p className="font-semibold text-gray-600">Hujan</p>
-                      <p className="text-xs text-gray-500 mt-4">17 November 2025</p>
-                    </div>
-                  </div>
+                  {/* --- BLOK CUACA BESOK DIHILANGKAN --- */}
                 </div>
               </div>
             </div>
@@ -267,20 +304,23 @@ export default function DashboardPage() {
         ) : (
           <div className="grid grid-cols-1 gap-6">
             <div className="grid grid-cols-2 gap-6">
+              {/* --- BLOK PREDIKSI CUACA (MOBILE) --- */}
               <div className="bg-white rounded-2xl shadow p-4 text-center">
-                <p className="text-sm text-gray-500 mb-1">Cuaca Hari Ini</p>
+                <p className="text-sm text-gray-500 mb-1">Prediksi Cuaca</p>
                 <div className="flex flex-col items-center">
-                  <span className="text-3xl">⛅</span>
-                  <p className="font-semibold text-gray-800">{deviceStatus.is_rain ? "Berpotensi Hujan" : "Cerah Berawan"}</p>
-                  <p className="text-xs text-gray-400 mt-2">7 Mei 2025</p>
+                  <span className="text-3xl">{weatherEmoji}</span>
+                  <p className="font-semibold text-gray-800">{weatherText}</p>
+                  <p className="text-xs text-gray-400 mt-2">{new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</p>
                 </div>
               </div>
+              
+              {/* --- BLOK CUACA BESOK DIHILANGKAN, DIGANTI DENGAN KALENDER --- */}
               <div className="bg-white rounded-2xl shadow p-4 text-center flex flex-col">
-                <p className="text-sm text-gray-500 mb-1">Cuaca Besok</p>
+                <p className="text-sm text-gray-500 mb-1">Kalender</p>
                 <div className="flex flex-col items-center flex-grow justify-center">
-                  <span className="text-3xl">🌧️</span>
-                  <p className="font-semibold text-gray-800">Hujan</p>
-                  <p className="text-xs text-gray-400 mt-2">8 Mei 2025</p>
+                  <span className="text-3xl">🗓️</span>
+                  <p className="font-semibold text-gray-800">Lihat Data Historis</p>
+                  <p className="text-xs text-gray-400 mt-2">{new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</p>
                 </div>
                 <button
                   onClick={() => setIsCalendarOpen(true)}
@@ -289,13 +329,15 @@ export default function DashboardPage() {
                   <CalendarDays size={24} />
                 </button>
               </div>
+              {/* ---------------------------------------------------- */}
+
             </div>
 
             <div className="grid grid-cols-2 gap-6">
               <div className="bg-white rounded-2xl shadow p-4 text-center">
                 <p className="text-sm text-gray-500 mb-1">Suhu</p>
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-3xl">☀️</span>
+                  {/* <span className="text-3xl">☀️</span> */}
                   <p className="text-3xl font-bold text-gray-800">{latestData.temperature}°C</p>
                 </div>
               </div>
